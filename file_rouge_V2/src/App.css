@@ -1,0 +1,237 @@
+/* ==========================================================================
+   Tomobilty.ma — App shell & landing (CSS only)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Hero / intro section
+   -------------------------------------------------------------------------- */
+
+#center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 26px;
+  padding: 20px 0 48px;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.hero .base,
+.hero .framework,
+.hero .vite {
+  margin: 0 auto;
+}
+
+.hero .base {
+  position: relative;
+  z-index: 0;
+  width: 170px;
+  height: auto;
+}
+
+.hero .framework,
+.hero .vite {
+  position: absolute;
+  height: auto;
+}
+
+.hero .framework {
+  z-index: 1;
+  top: 24px;
+  height: 28px;
+  transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+    scale(1.2);
+}
+
+.hero .vite {
+  z-index: 0;
+  top: 80px;
+  height: 26px;
+  width: auto;
+  transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+    scale(0.7);
+}
+
+#center h1 {
+  margin: 0;
+}
+
+#center p {
+  max-width: 460px;
+  color: var(--muted);
+}
+
+/* Counter button (secondary style) */
+
+.counter {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-h);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 13px 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.counter:hover:not(:disabled) {
+  color: var(--primary);
+  background: var(--surface);
+  border-color: var(--primary);
+}
+
+.counter:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Divider */
+
+.ticks {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Documentation / social section
+   -------------------------------------------------------------------------- */
+
+#next-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 44px 0;
+  text-align: left;
+}
+
+#next-steps > div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+#docs {
+  border-right: none;
+}
+
+#next-steps .icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 14px;
+  color: var(--primary);
+}
+
+#next-steps h2 {
+  margin-bottom: 4px;
+}
+
+#next-steps p {
+  margin: 0;
+  color: var(--muted);
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#next-steps ul li {
+  width: 100%;
+}
+
+#next-steps ul a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-h);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+#next-steps ul a:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
+
+#next-steps ul .logo,
+#next-steps ul .button-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bottom spacer
+   -------------------------------------------------------------------------- */
+
+#spacer {
+  height: 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  #center {
+    padding: 12px 0 36px;
+  }
+
+  #next-steps {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 32px 0;
+  }
+
+  #next-steps > div {
+    padding: 22px;
+  }
+
+  #next-steps ul a {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    max-width: 300px;
+  }
+
+  .counter {
+    width: 100%;
+  }
+
+  #next-steps > div {
+    padding: 20px;
+  }
+}
