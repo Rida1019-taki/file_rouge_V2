@@ -15,8 +15,20 @@ const cancelReservation = async (id) => {
   return response.data;
 };
 
+const getOwnerReservations = async () => {
+  const response = await api.get("/reservations/owner");
+  return response.data;
+};
+
+const updateReservationStatus = async (id, status) => {
+  const response = await api.patch(`/reservations/${id}/status/${status}`);
+  return response.data;
+};
+
 export default {
   createReservation,
   getMyReservations,
   cancelReservation,
+  getOwnerReservations,
+  updateReservationStatus,
 };
