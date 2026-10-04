@@ -7,6 +7,7 @@ const navItems = [
   { label: "Louer une voiture", to: "/client/cars?type=RENTAL" },
   { label: "Mes réservations", to: "/client/reservations" },
   { label: "Mon profil", to: "/client/profile" },
+  { label: "Retour à l’accueil", to: "/" },
 ];
 
 function ClientLayout() {
@@ -33,7 +34,7 @@ function ClientLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === "/client"}
+              end={item.to === "/client" || item.to === "/"}
               className={({ isActive }) =>
                 `client-nav__link ${isActive ? "is-active" : ""}`
               }

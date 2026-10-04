@@ -23,12 +23,14 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminAnnouncements from "../pages/admin/AdminAnnouncements";
 import AdminProfile from "../pages/admin/AdminProfile";
+import HomePage from "../pages/HomePage";
 
 function AppRoutes() {
     return (
         <Routes>
 
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/cars/:id" element={<CarDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 

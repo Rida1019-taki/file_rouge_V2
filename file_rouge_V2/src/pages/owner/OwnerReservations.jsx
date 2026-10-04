@@ -11,9 +11,27 @@ const getReservationTypeLabel = (reservation) => {
   if (["LOCATION", "RENTAL"].includes(type)) return "Location";
   return type || "Non précisé";
 };
-const getClientPhone = (reservation) =>
-  reservation.clientTelephone || reservation.telephoneClient || reservation.clientPhone ||
-  reservation.client?.telephone || reservation.client?.phone || "";
+const getClientPhone = (reservation) => {
+  const client = reservation.client || reservation.clientUtilisateur || reservation.utilisateur || reservation.user || {};
+  const user = client.utilisateur || client.user || {};
+  return reservation.clientTelephone || reservation.telephoneClient || reservation.clientPhone ||
+    reservation.telephone || reservation.numeroTelephone || client.telephone || client.phone ||
+    client.numeroTelephone || user.telephone || user.phone || user.numeroTelephone || "";
+};
+
+const getClientId = (reservation) => {
+  const client = reservation.client || reservation.clientUtilisateur || reservation.utilisateur || reservation.user || {};
+  const user = client.utilisateur || client.user || {};
+  return reservation.clientId || reservation.idClient || reservation.client_id ||
+    reservation.utilisateurId || reservation.idUtilisateur || reservation.userId || reservation.idUser ||
+    reservation.idClientUtilisateur || reservation.clientUtilisateurId || reservation.id_client ||
+    client.idUtilisateur || client.idUser || client.userId || user.id || user.idUtilisateur || client.id;
+};
+
+const getProfilePhone = (profile) => {
+  const user = profile?.utilisateur || profile?.user || profile?.data || profile || {};
+  return user.telephone || user.phone || user.numeroTelephone || user.telephoneClient || "";
+};
 
 const statusOptions = ["EN_ATTENTE", "CONFIRMEE", "ANNULEE", "TERMINEE"];
 
@@ -29,15 +47,16 @@ function OwnerReservations() {
       const enrichedRows = await Promise.all(rows.map(async (reservation) => {
         if (getClientPhone(reservation)) return reservation;
 
-        const clientId = reservation.clientId || reservation.idClient || reservation.client_id || reservation.client?.id;
+        const clientId = getClientId(reservation);
         if (!clientId) return reservation;
 
         try {
           const client = await clientService.getClient(clientId);
+          const phone = getProfilePhone(client);
           return {
             ...reservation,
             client: { ...reservation.client, ...client },
-            clientTelephone: client.telephone || client.phone || "",
+            clientTelephone: phone,
           };
         } catch (error) {
           console.error(`Erreur chargement téléphone du client ${clientId} :`, error);

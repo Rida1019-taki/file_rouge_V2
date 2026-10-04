@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import voitureService from "../../services/voitureService";
+import { isCarAvailable } from "../../utils/carAvailability";
 
 const formatPrice = (value) => {
   const numeric = Number(value ?? 0);
@@ -63,7 +64,9 @@ function OwnerCars() {
         <div className="empty-state">Aucune voiture enregistrée.</div>
       ) : (
         <div className="car-grid owner-car-grid">
-          {cars.map((car) => (
+          {cars.map((car) => {
+            const available = isCarAvailable(car.disponible);
+            return (
             <article className="car-card owner-car-card" key={car.id}>
               <div className="car-card__image">
                 {car.image || car.images?.[0] ? (
@@ -76,8 +79,8 @@ function OwnerCars() {
               <div className="car-card__body">
                 <div className="car-card__topline">
                   <span className="badge badge--soft">{car.listingType || "RENTAL"}</span>
-                  <span className={`status-pill ${car.disponible === false ? "status-pill--muted" : "status-pill--success"}`}>
-                    {car.disponible === false ? "Indisponible" : "Disponible"}
+                  <span className={`status-pill ${available ? "status-pill--success" : "status-pill--muted"}`}>
+                    {available ? "Disponible" : "Indisponible"}
                   </span>
                 </div>
 
@@ -100,7 +103,8 @@ function OwnerCars() {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

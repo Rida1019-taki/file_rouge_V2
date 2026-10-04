@@ -7,6 +7,7 @@ const navItems = [
   { label: "Ajouter une voiture", to: "/owner/cars/new", icon: "+" },
   { label: "Réservations", to: "/owner/reservations", icon: "✓" },
   { label: "Mon profil", to: "/owner/profile", icon: "◌" },
+  { label: "Retour à l’accueil", to: "/", icon: "↩" },
 ];
 
 function OwnerLayout() {
@@ -33,7 +34,7 @@ function OwnerLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === "/owner"}
+              end={item.to === "/owner" || item.to === "/"}
               className={({ isActive }) =>
                 `client-nav__link ${isActive ? "is-active" : ""}`
               }

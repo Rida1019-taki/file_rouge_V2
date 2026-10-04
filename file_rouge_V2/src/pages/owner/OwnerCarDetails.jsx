@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import voitureService from "../../services/voitureService";
+import { isCarAvailable } from "../../utils/carAvailability";
 
 const formatPrice = (value) => `${Number(value ?? 0).toLocaleString("fr-FR")} DH`;
 
@@ -61,6 +62,7 @@ function OwnerCarDetails() {
   }
 
   const primaryPrice = car.prix ?? car.prixJour ?? car.prixVente ?? 0;
+  const available = isCarAvailable(car.disponible);
 
   return (
     <div className="client-page">
@@ -86,7 +88,7 @@ function OwnerCarDetails() {
         <div className="car-detail__content">
           <div className="detail-badges">
             <span className="badge badge--soft">{car.listingType || "RENTAL"}</span>
-            <span className="status-pill">{car.disponible === false ? "Indisponible" : "Disponible"}</span>
+            <span className={`status-pill ${available ? "status-pill--success" : "status-pill--muted"}`}>{available ? "Disponible" : "Indisponible"}</span>
           </div>
 
           <div className="detail-grid">

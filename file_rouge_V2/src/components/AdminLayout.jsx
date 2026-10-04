@@ -6,6 +6,7 @@ const navigation = [
   { to: "/admin/users", label: "Utilisateurs", icon: "♙" },
   { to: "/admin/annonces", label: "Annonces", icon: "▤" },
   { to: "/admin/profile", label: "Mon profil", icon: "◎" },
+  { to: "/", label: "Retour à l’accueil", icon: "↩", end: true },
 ];
 
 function AdminLayout() {

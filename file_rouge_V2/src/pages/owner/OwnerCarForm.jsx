@@ -9,6 +9,7 @@ const defaultForm = {
   annee: "",
   nombrePlaces: "",
   transmission: "MANUELLE",
+  carburant: "",
   prix: "",
   villeId: "",
   categorieId: "",
@@ -67,11 +68,12 @@ function OwnerCarForm() {
           annee: data.annee || "",
           nombrePlaces: data.nombrePlaces ?? data.places ?? "",
           transmission: data.transmission || "MANUELLE",
+          carburant: data.carburant || "",
           prix: data.prix ?? data.prixParJour ?? data.prixJour ?? data.prixVente ?? "",
           villeId: data.villeId ?? data.ville?.id ?? "",
           categorieId: data.categorieId ?? data.categorie?.id ?? data.categoryId ?? "",
           listingType: data.listingType || data.type || "RENTAL",
-          disponible: data.disponible ?? true,
+          disponible: data.disponible === true || data.disponible === "true",
         });
       } catch (error) {
         console.error("Erreur chargement voiture :", error);
@@ -112,12 +114,13 @@ function OwnerCarForm() {
       annee: Number(form.annee),
       nombrePlaces: Number(form.nombrePlaces),
       transmission: form.transmission,
+      carburant: form.carburant,
       prixParJour: !isSaleListing ? numericPrice : null,
       prixVente: isSaleListing ? numericPrice : null,
       listingType: form.listingType,
       categorieId: Number(form.categorieId),
       villeId: Number(form.villeId),
-      disponible: Boolean(form.disponible),
+      disponible: form.disponible === true,
     };
 
     try {
@@ -214,6 +217,18 @@ function OwnerCarForm() {
         </div>
 
         <div>
+          <label>Carburant</label>
+          <select name="carburant" value={form.carburant} onChange={handleChange} required>
+            <option value="">Choisir un carburant</option>
+            <option value="ESSENCE">Essence</option>
+            <option value="DIESEL">Diesel</option>
+            <option value="HYBRIDE">Hybride</option>
+            <option value="ELECTRIQUE">Électrique</option>
+            <option value="GPL">GPL</option>
+          </select>
+        </div>
+
+        <div>
           <label>{isSaleListing ? "Prix de vente" : "Prix de location"}</label>
           <input
             type="number"
@@ -271,7 +286,7 @@ function OwnerCarForm() {
 
         <div className="checkbox-row">
           <label>
-            <input type="checkbox" name="disponible" checked={Boolean(form.disponible)} onChange={handleChange} />
+            <input type="checkbox" name="disponible" checked={form.disponible === true} onChange={handleChange} />
             Disponible
           </label>
         </div>

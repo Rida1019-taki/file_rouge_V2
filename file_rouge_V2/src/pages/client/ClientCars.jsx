@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import voitureService from "../../services/voitureService";
+import { isCarAvailable } from "../../utils/carAvailability";
 
 const formatPrice = (value) => {
   const numeric = Number(value ?? 0);
@@ -61,7 +62,9 @@ function ClientCars() {
       <div className="car-card__body">
         <div className="car-card__topline">
           <span className="badge badge--soft">{car.listingType || (activeType === "SALE" ? "SALE" : "RENTAL")}</span>
-          <span className="status-pill">{car.disponible === false ? "Indisponible" : "Disponible"}</span>
+          <span className={`status-pill ${isCarAvailable(car.disponible) ? "status-pill--success" : "status-pill--muted"}`}>
+            {isCarAvailable(car.disponible) ? "Disponible" : "Indisponible"}
+          </span>
         </div>
 
         <h3>{car.marque} {car.modele}</h3>

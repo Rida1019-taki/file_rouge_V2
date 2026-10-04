@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import voitureService from "../../services/voitureService";
 import reservationService from "../../services/reservationService";
+import { isCarAvailable } from "../../utils/carAvailability";
 
 function OwnerDashboard() {
   const [cars, setCars] = useState([]);
@@ -32,7 +33,7 @@ function OwnerDashboard() {
     return <div className="client-page"><h1>Dashboard</h1><p>Chargement...</p></div>;
   }
 
-  const availableCars = cars.filter((car) => String(car.disponible ?? "true") === "true");
+  const availableCars = cars.filter((car) => isCarAvailable(car.disponible));
   const rentalCars = cars.filter((car) => {
     const listingType = String(car.listingType || car.type || "").toUpperCase();
     return listingType === "RENTAL";
@@ -113,8 +114,8 @@ function OwnerDashboard() {
                 <strong>{car.marque} {car.modele}</strong>
                 <small>{car.listingType || "-"}</small>
               </div>
-              <span className={`status-pill ${car.disponible === false ? "status-pill--muted" : "status-pill--success"}`}>
-                {car.disponible === false ? "Indisponible" : "Disponible"}
+              <span className={`status-pill ${isCarAvailable(car.disponible) ? "status-pill--success" : "status-pill--muted"}`}>
+                {isCarAvailable(car.disponible) ? "Disponible" : "Indisponible"}
               </span>
             </div>
           ))}
