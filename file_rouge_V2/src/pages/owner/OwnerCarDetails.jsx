@@ -4,6 +4,7 @@ import voitureService from "../../services/voitureService";
 import { isCarAvailable } from "../../utils/carAvailability";
 
 const formatPrice = (value) => `${Number(value ?? 0).toLocaleString("fr-FR")} DH`;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 Mo
 
 function OwnerCarDetails() {
   const { id } = useParams();
@@ -30,10 +31,31 @@ function OwnerCarDetails() {
     loadCar();
   }, [id]);
 
+  const handleFileChange = (e) => {
+    setError("");
+    const files = Array.from(e.target.files || []);
+    const oversizedFile = files.find((file) => file.size > MAX_IMAGE_SIZE);
+
+    if (oversizedFile) {
+      setError(`L'image "${oversizedFile.name}" dépasse la taille maximale autorisée de 5 Mo.`);
+      e.target.value = "";
+      setSelectedFiles([]);
+      return;
+    }
+
+    setSelectedFiles(files);
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
 
     if (!selectedFiles.length) {
+      return;
+    }
+
+    const oversizedFile = Array.from(selectedFiles).find((file) => file.size > MAX_IMAGE_SIZE);
+    if (oversizedFile) {
+      setError(`L'image "${oversizedFile.name}" dépasse la taille maximale autorisée de 5 Mo.`);
       return;
     }
 
@@ -112,14 +134,14 @@ function OwnerCarDetails() {
               </div>
             </div>
 
-            <p className="upload-card__help">Sélectionnez une ou plusieurs photos pour illustrer cette voiture.</p>
+            <p className="upload-card__help">Sélectionnez une ou plusieurs photos pour illustrer cette voiture (max 5 Mo par image).</p>
 
             <label className="upload-button">
               <input
                 type="file"
                 multiple
                 accept="image/*"
-                onChange={(e) => setSelectedFiles(e.target.files)}
+                onChange={handleFileChange}
               />
               Choisir des photos
             </label>

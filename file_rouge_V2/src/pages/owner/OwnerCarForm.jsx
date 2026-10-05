@@ -93,6 +93,22 @@ function OwnerCarForm() {
     }));
   };
 
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 Mo
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    const oversizedFile = files.find((file) => file.size > MAX_IMAGE_SIZE);
+
+    if (oversizedFile) {
+      alert(`L'image "${oversizedFile.name}" dépasse la taille maximale autorisée de 5 Mo.`);
+      e.target.value = "";
+      setSelectedFiles([]);
+      return;
+    }
+
+    setSelectedFiles(files);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -136,6 +152,12 @@ function OwnerCarForm() {
       if (selectedFiles.length > 0) {
         const formData = new FormData();
         Array.from(selectedFiles).forEach((file) => formData.append("images", file));
+
+        const oversizedFile = Array.from(selectedFiles).find((file) => file.size > MAX_IMAGE_SIZE);
+        if (oversizedFile) {
+          alert(`L'image "${oversizedFile.name}" dépasse la taille maximale autorisée de 5 Mo.`);
+          return;
+        }
 
         setUploading(true);
         const carId = savedCar?.id ?? id;
@@ -297,7 +319,7 @@ function OwnerCarForm() {
               type="file"
               multiple
               accept="image/*"
-              onChange={(e) => setSelectedFiles(e.target.files)}
+              onChange={handleFileChange}
             />
             Ajouter une photo
           </label>
