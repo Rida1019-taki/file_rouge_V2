@@ -53,49 +53,49 @@ function OwnerDashboard() {
           <h1>Dashboard propriétaire</h1>
         </div>
         <Link to="/owner/cars/new" className="secondary-button owner-primary-button">
-          + Ajouter une voiture
+          + Déposer une annonce
         </Link>
       </div>
 
       <div className="stats-grid">
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">🚗</span>
+            <span className="stat-card__icon" aria-hidden="true">▣</span>
             <span>Voitures</span>
           </div>
           <strong>{cars.length}</strong>
         </div>
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">✓</span>
+            <span className="stat-card__icon" aria-hidden="true">✓</span>
             <span>Disponibles</span>
           </div>
           <strong>{availableCars.length}</strong>
         </div>
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">🕒</span>
+            <span className="stat-card__icon" aria-hidden="true">◷</span>
             <span>Location</span>
           </div>
           <strong>{rentalCars.length}</strong>
         </div>
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">💰</span>
+            <span className="stat-card__icon" aria-hidden="true">◈</span>
             <span>Vente</span>
           </div>
           <strong>{saleCars.length}</strong>
         </div>
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">⏳</span>
+            <span className="stat-card__icon" aria-hidden="true">◌</span>
             <span>En attente</span>
           </div>
           <strong>{pending.length}</strong>
         </div>
         <div className="stat-card owner-stat-card">
           <div className="stat-card__header">
-            <span className="stat-card__icon">✔</span>
+            <span className="stat-card__icon" aria-hidden="true">✓</span>
             <span>Confirmées</span>
           </div>
           <strong>{confirmed.length}</strong>

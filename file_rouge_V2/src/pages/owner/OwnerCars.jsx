@@ -55,7 +55,7 @@ function OwnerCars() {
           <p className="eyebrow">Véhicules</p>
           <h1>Mes voitures</h1>
         </div>
-        <button type="button" onClick={() => navigate("/owner/cars/new")}>Ajouter une voiture</button>
+        <button type="button" onClick={() => navigate("/owner/cars/new")}>+ Déposer une annonce</button>
       </div>
 
       {error && <div className="info-box info-box--error">{error}</div>}
@@ -78,7 +78,9 @@ function OwnerCars() {
 
               <div className="car-card__body">
                 <div className="car-card__topline">
-                  <span className="badge badge--soft">{car.listingType || "RENTAL"}</span>
+                  <span className="badge badge--soft">
+                    {["SALE", "ACHAT", "VENTE"].includes(String(car.listingType || "").toUpperCase()) ? "Vente" : "Location"}
+                  </span>
                   <span className={`status-pill ${available ? "status-pill--success" : "status-pill--muted"}`}>
                     {available ? "Disponible" : "Indisponible"}
                   </span>

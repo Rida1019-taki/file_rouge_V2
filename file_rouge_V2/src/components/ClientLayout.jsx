@@ -2,12 +2,12 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 
 const navItems = [
-  { label: "Dashboard", to: "/client" },
-  { label: "Acheter une voiture", to: "/client/cars?type=SALE" },
-  { label: "Louer une voiture", to: "/client/cars?type=RENTAL" },
-  { label: "Mes réservations", to: "/client/reservations" },
-  { label: "Mon profil", to: "/client/profile" },
-  { label: "Retour à l’accueil", to: "/" },
+  { label: "Dashboard", to: "/client", icon: "⌂" },
+  { label: "Acheter une voiture", to: "/client/cars?type=SALE", icon: "▣" },
+  { label: "Louer une voiture", to: "/client/cars?type=RENTAL", icon: "◈" },
+  { label: "Mes réservations", to: "/client/reservations", icon: "✓" },
+  { label: "Mon profil", to: "/client/profile", icon: "◌" },
+  { label: "Retour à l’accueil", to: "/", icon: "↩" },
 ];
 
 function ClientLayout() {
@@ -39,7 +39,8 @@ function ClientLayout() {
                 `client-nav__link ${isActive ? "is-active" : ""}`
               }
             >
-              {item.label}
+              <span className="client-nav__icon" aria-hidden="true">{item.icon}</span>
+              <span>{item.label}</span>
             </NavLink>
           ))}
 

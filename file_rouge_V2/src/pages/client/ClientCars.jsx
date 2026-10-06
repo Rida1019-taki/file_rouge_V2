@@ -1,30 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import voitureService from "../../services/voitureService";
 import { isCarAvailable } from "../../utils/carAvailability";
 
-const formatPrice = (value) => {
-  const numeric = Number(value ?? 0);
-  return `${numeric.toLocaleString("fr-FR")} DH`;
-};
+const formatPrice = (value) => `${Number(value ?? 0).toLocaleString("fr-FR")} DH`;
 
 const resolvePrice = (car) => {
-  if (car.listingType === "SALE") {
-    return car.prix ?? car.prixVente ?? car.prixJour ?? car.prixParJour;
+  const isSale = ["SALE", "ACHAT", "VENTE"].includes(String(car.listingType || car.type || "").toUpperCase());
+  if (isSale) {
+    return car.prixVente ?? car.prix ?? car.prixJour ?? car.prixParJour ?? 0;
   }
-
-  return car.prixJour ?? car.prix ?? car.prixParJour;
+  return car.prixParJour ?? car.prixJour ?? car.prix ?? 0;
 };
 
 const resolveImage = (car) => car.image || car.images?.[0] || null;
 
 function ClientCars() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeType = searchParams.get("type") === "SALE" ? "SALE" : "RENTAL";
+  const currentTab = searchParams.get("type") || "ALL"; // ALL, RENTAL, SALE
 
   const [rentalCars, setRentalCars] = useState([]);
   const [saleCars, setSaleCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     loadCars();
@@ -37,8 +35,8 @@ function ClientCars() {
         voitureService.getSaleCars(),
       ]);
 
-      setRentalCars(rentalData);
-      setSaleCars(saleData);
+      setRentalCars(Array.isArray(rentalData) ? rentalData : []);
+      setSaleCars(Array.isArray(saleData) ? saleData : []);
     } catch (error) {
       console.error("Erreur chargement voitures :", error);
     } finally {
@@ -46,100 +44,159 @@ function ClientCars() {
     }
   };
 
-  const visibleRentalCars = activeType === "SALE" ? [] : rentalCars;
-  const visibleSaleCars = activeType === "RENTAL" ? [] : saleCars;
+  const displayedCars = useMemo(() => {
+    let list = [];
+    if (currentTab === "RENTAL") {
+      list = rentalCars;
+    } else if (currentTab === "SALE") {
+      list = saleCars;
+    } else {
+      // Merge unique by ID
+      const map = new Map();
+      [...rentalCars, ...saleCars].forEach((c) => {
+        if (!map.has(c.id)) map.set(c.id, c);
+      });
+      list = Array.from(map.values());
+    }
 
-  const renderCarCard = (car) => (
-    <article className="car-card" key={car.id}>
-      <div className="car-card__image">
-        {resolveImage(car) ? (
-          <img src={resolveImage(car)} alt={`${car.marque} ${car.modele}`} />
-        ) : (
-          <div className="car-card__placeholder">{car.marque?.slice(0, 2).toUpperCase() || "VO"}</div>
-        )}
-      </div>
+    if (!searchTerm.trim()) return list;
 
-      <div className="car-card__body">
-        <div className="car-card__topline">
-          <span className="badge badge--soft">{car.listingType || (activeType === "SALE" ? "SALE" : "RENTAL")}</span>
-          <span className={`status-pill ${isCarAvailable(car.disponible) ? "status-pill--success" : "status-pill--muted"}`}>
-            {isCarAvailable(car.disponible) ? "Disponible" : "Indisponible"}
-          </span>
+    const query = searchTerm.toLowerCase().trim();
+    return list.filter((car) => {
+      const name = `${car.marque || ""} ${car.modele || ""}`.toLowerCase();
+      const city = String(car.ville?.label || car.ville?.nom || car.ville || "").toLowerCase();
+      const cat = String(car.category?.label || car.category || car.categorie || "").toLowerCase();
+      return name.includes(query) || city.includes(query) || cat.includes(query);
+    });
+  }, [currentTab, rentalCars, saleCars, searchTerm]);
+
+  const renderCarCard = (car) => {
+    const isSale = ["SALE", "ACHAT", "VENTE"].includes(String(car.listingType || car.type || "").toUpperCase());
+    const available = isCarAvailable(car.disponible);
+    const image = resolveImage(car);
+    const carPrice = resolvePrice(car);
+    const city = car.ville?.label || car.ville?.nom || car.ville || "Maroc";
+    const category = car.category?.label || car.category || car.categorie || "Véhicule";
+
+    return (
+      <article className="catalog-card" key={car.id}>
+        <div className="catalog-card__media">
+          {image ? (
+            <img src={image} alt={`${car.marque} ${car.modele}`} loading="lazy" />
+          ) : (
+            <div className="catalog-card__no-image">
+              <span>{car.marque?.slice(0, 3)?.toUpperCase() || "AUTO"}</span>
+            </div>
+          )}
+          <div className="catalog-card__tags">
+            <span className={`listing-type-badge ${isSale ? "type--sale" : "type--rental"}`}>
+              {isSale ? "Vente" : "Location"}
+            </span>
+            <span className={`status-badge ${available ? "status--available" : "status--unavailable"}`}>
+              {available ? "Disponible" : "Réservé"}
+            </span>
+          </div>
         </div>
 
-        <h3>{car.marque} {car.modele}</h3>
-        <p className="car-meta">{car.annee || "-"} • {car.ville || "Ville non renseignée"}</p>
-        <p className="car-meta">Catégorie : {car.category || car.categorie || "-"}</p>
-        <p className="car-price">{formatPrice(resolvePrice(car))}</p>
+        <div className="catalog-card__content">
+          <h3 className="catalog-card__title">
+            {car.marque} {car.modele}
+          </h3>
 
-        <div className="car-card__actions">
-          <Link to={`/client/cars/${car.id}`} className="secondary-button">
-            Voir détails
-          </Link>
+          <div className="catalog-card__specs-row">
+            <span className="spec-chip">{car.annee || "N/C"}</span>
+            <span className="spec-chip">{city}</span>
+            <span className="spec-chip">{car.transmission || "Boîte N/C"}</span>
+            <span className="spec-chip">{category}</span>
+          </div>
+
+          <div className="catalog-card__pricing-row">
+            <div className="catalog-card__price">
+              <strong>{formatPrice(carPrice)}</strong>
+              {!isSale && <span className="price-unit"> / jour</span>}
+            </div>
+
+            <Link to={`/client/cars/${car.id}`} className="catalog-card__button">
+              Voir détails
+            </Link>
+          </div>
         </div>
-      </div>
-    </article>
-  );
+      </article>
+    );
+  };
 
   if (loading) {
-    return <div className="client-page"><h1>Voitures</h1><p>Chargement...</p></div>;
+    return (
+      <div className="client-page">
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">Catalogue</p>
+            <h1>Voitures disponibles</h1>
+          </div>
+        </div>
+        <p>Chargement des véhicules...</p>
+      </div>
+    );
   }
 
   return (
     <div className="client-page">
       <div className="page-header page-header--split">
         <div>
-          <p className="eyebrow">Acheter & louer</p>
+          <p className="eyebrow">Catalogue automobile</p>
           <h1>Voitures disponibles</h1>
         </div>
 
-        <div className="toggle-group" aria-label="Type de voiture">
+        <div className="toggle-group" aria-label="Filtrer les annonces">
           <button
             type="button"
-            className={activeType === "RENTAL" ? "toggle-button is-active" : "toggle-button"}
-            onClick={() => setSearchParams({ type: "RENTAL" })}
+            className={currentTab === "ALL" ? "toggle-button is-active" : "toggle-button"}
+            onClick={() => setSearchParams({})}
           >
-            Louer
+            Toutes ({rentalCars.length + saleCars.length})
           </button>
           <button
             type="button"
-            className={activeType === "SALE" ? "toggle-button is-active" : "toggle-button"}
+            className={currentTab === "RENTAL" ? "toggle-button is-active" : "toggle-button"}
+            onClick={() => setSearchParams({ type: "RENTAL" })}
+          >
+            Location ({rentalCars.length})
+          </button>
+          <button
+            type="button"
+            className={currentTab === "SALE" ? "toggle-button is-active" : "toggle-button"}
             onClick={() => setSearchParams({ type: "SALE" })}
           >
-            Acheter
+            Vente ({saleCars.length})
           </button>
         </div>
       </div>
 
-      {activeType === "RENTAL" && (
-        <section className="listing-section">
-          <div className="section-heading">
-            <h2>Voitures en location</h2>
-            <span>{visibleRentalCars.length} disponible(s)</span>
+      {/* Quick Search Bar */}
+      <div className="client-filter-bar">
+        <input
+          type="text"
+          placeholder="Rechercher par marque, modèle ou ville..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="client-search-input"
+        />
+        <span className="client-results-count">
+          {displayedCars.length} véhicule{displayedCars.length > 1 ? "s" : ""} trouvé{displayedCars.length > 1 ? "s" : ""}
+        </span>
+      </div>
+
+      <section className="listing-section">
+        {displayedCars.length === 0 ? (
+          <div className="empty-state">
+            <p>Aucun véhicule ne correspond à vos critères de recherche.</p>
           </div>
-
-          {visibleRentalCars.length === 0 ? (
-            <div className="empty-state">Aucune voiture en location pour le moment.</div>
-          ) : (
-            <div className="car-grid">{visibleRentalCars.map(renderCarCard)}</div>
-          )}
-        </section>
-      )}
-
-      {activeType === "SALE" && (
-        <section className="listing-section">
-          <div className="section-heading">
-            <h2>Voitures à vendre</h2>
-            <span>{visibleSaleCars.length} disponible(s)</span>
+        ) : (
+          <div className="car-catalog-grid">
+            {displayedCars.map(renderCarCard)}
           </div>
-
-          {visibleSaleCars.length === 0 ? (
-            <div className="empty-state">Aucune voiture à vendre pour le moment.</div>
-          ) : (
-            <div className="car-grid">{visibleSaleCars.map(renderCarCard)}</div>
-          )}
-        </section>
-      )}
+        )}
+      </section>
     </div>
   );
 }

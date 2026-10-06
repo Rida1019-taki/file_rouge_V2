@@ -182,8 +182,8 @@ function OwnerCarForm() {
     <div className="client-page">
       <div className="page-header">
         <div>
-          <p className="eyebrow">Véhicule</p>
-          <h1>{isEditMode ? "Modifier la voiture" : "Ajouter une voiture"}</h1>
+          <p className="eyebrow">Publication de véhicule</p>
+          <h1>{isEditMode ? "Modifier l'annonce" : "Déposer une annonce"}</h1>
         </div>
         <Link to="/owner/cars" className="secondary-button">Retour</Link>
       </div>

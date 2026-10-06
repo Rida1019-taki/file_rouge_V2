@@ -4,7 +4,7 @@ import authService from "../services/authService";
 const navItems = [
   { label: "Dashboard", to: "/owner", icon: "⌂" },
   { label: "Mes voitures", to: "/owner/cars", icon: "▣" },
-  { label: "Ajouter une voiture", to: "/owner/cars/new", icon: "+" },
+  { label: "Déposer une annonce", to: "/owner/cars/new", icon: "+" },
   { label: "Réservations", to: "/owner/reservations", icon: "✓" },
   { label: "Mon profil", to: "/owner/profile", icon: "◌" },
   { label: "Retour à l’accueil", to: "/", icon: "↩" },
